@@ -1,3 +1,6 @@
+import { Session } from 'express-session';
+import { User } from '../typeorm/entities/User';
+
 export enum DISCORD_API_ROUTES {
   OAUTH2_TOKEN = 'https://discord.com/api/v8/oauth2/token',
   OAUTH2_USER = 'https://discord.com/api/v8/users/@me',
@@ -44,12 +47,3 @@ export type CreateUserParams = {
   tag: string;
   avatar: string;
 };
-/**
- * {
-  access_token: '5UU9hORqgjdAzY7RCjqd1sqdqULnvi',
-  expires_in: 604800,
-  refresh_token: 'tA30sd4zFBZtAjBk4Qke7FlQrzhbwF',
-  scope: 'identify',
-  token_type: 'Bearer'
-}
- */

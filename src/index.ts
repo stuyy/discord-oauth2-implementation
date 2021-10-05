@@ -1,8 +1,11 @@
 require('dotenv').config();
 import 'reflect-metadata';
 import express from 'express';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import { createConnection } from 'typeorm';
 import { User } from './typeorm/entities/User';
+import { Session } from './typeorm/entities/Session';
 
 const PORT = process.env.PORT || 3001;
 
@@ -11,16 +14,30 @@ async function main() {
   try {
     await createConnection({
       type: 'mysql',
-      username: 'testuser',
-      password: 'testuser123',
-      database: 'discord_oauth2_db',
-      host: 'localhost',
-      port: 3306,
-      entities: [User],
+      username: process.env.MYSQL_DB_USERNAME,
+      password: process.env.MYSQL_DB_PASSWORD,
+      database: process.env.MYSQL_DB_DATABASE,
+      host: process.env.MYSQL_DB_HOSTNAME,
+      port: parseInt(process.env.MYSQL_DB_PORT || '3306'),
+      entities: [User, Session],
       synchronize: true,
     });
     console.log('Connected to the Database');
     const { default: routes } = await import('./routes');
+    const { deserializeSession } = await import('./utils/session');
+    app.use(cookieParser());
+    app.use(
+      session({
+        secret: 'ASDSAJHDGASJDHASDABSDHJASGDAJHD',
+        name: 'DISCORD_OAUTH2_SESSION_ID',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          maxAge: 3600000 * 24,
+        },
+      })
+    );
+    app.use(deserializeSession);
     app.use('/api', routes);
     app.listen(PORT, () => console.log('Listening on Port:', PORT));
   } catch (err) {

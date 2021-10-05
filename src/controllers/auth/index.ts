@@ -5,6 +5,7 @@ import {
   getDiscordUserDetails,
 } from '../../services/auth';
 import { buildOAuth2CredentialsRequest, buildUser } from '../../utils/helpers';
+import { serializeSession } from '../../utils/session';
 
 export async function authDiscordRedirectController(
   req: Request,
@@ -21,6 +22,7 @@ export async function authDiscordRedirectController(
         credentials.access_token
       );
       const newUser = await createUser(buildUser(user, credentials));
+      await serializeSession(req, newUser);
       res.send(newUser);
     } catch (err) {
       console.log(err);
@@ -33,9 +35,9 @@ export async function getAuthenticatedUserController(
   req: Request,
   res: Response
 ) {
-  res.send(200);
+  return req.user ? res.send(req.user) : res.send(401);
 }
 
 export async function revokeAccessTokenController(req: Request, res: Response) {
-  res.send(200);
+  return req.user ? res.send(req.user) : res.send(401);
 }
