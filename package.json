@@ -1,0 +1,28 @@
+{
+  "name": "discord-oauth2-implementation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "start:dev": "nodemon ./src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "mysql2": "^2.3.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.37"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}
