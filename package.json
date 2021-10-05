@@ -15,7 +15,7 @@
     "express-session": "^1.17.2",
     "mysql2": "^2.3.0",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.37"
+    "typeorm": "^0.2.38"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
