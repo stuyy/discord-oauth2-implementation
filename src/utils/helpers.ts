@@ -4,11 +4,23 @@ import {
   CreateUserParams,
   DiscordOAuth2CredentialsResponse,
   DiscordOAuth2UserResponse,
+  EncryptedTokens,
   OAuth2ExchangeRequestParams,
 } from './types';
+import CryptoJS from 'crypto-js';
 
-const { DISCORD_OAUTH_CLIENT_ID, DISCORD_OAUTH_SECRET, DISCORD_REDIRECT_URL } =
-  process.env;
+const {
+  DISCORD_OAUTH_CLIENT_ID,
+  DISCORD_OAUTH_SECRET,
+  DISCORD_REDIRECT_URL,
+  ENCRYPT_SECRET,
+} = process.env;
+
+export const encryptToken = (token: string) =>
+  CryptoJS.AES.encrypt(token, ENCRYPT_SECRET!);
+
+export const decryptToken = (encrypted: string) =>
+  CryptoJS.AES.decrypt(encrypted, ENCRYPT_SECRET!);
 
 export const buildOAuth2RequestPayload = (data: OAuth2ExchangeRequestParams) =>
   new url.URLSearchParams(data).toString();
@@ -21,15 +33,15 @@ export const authHeaders = (accessToken: string): AxiosRequestConfig => ({
 
 export const buildUser = (
   user: DiscordOAuth2UserResponse,
-  credentials: DiscordOAuth2CredentialsResponse
+  credentials: EncryptedTokens
 ): CreateUserParams => ({
   discordId: user.id,
   username: user.username,
   discriminator: user.discriminator,
   avatar: user.avatar,
   tag: `${user.username}#${user.discriminator}`,
-  accessToken: credentials.access_token,
-  refreshToken: credentials.refresh_token,
+  accessToken: credentials.accessToken,
+  refreshToken: credentials.refreshToken,
 });
 
 export const buildOAuth2CredentialsRequest = (code: string) => ({

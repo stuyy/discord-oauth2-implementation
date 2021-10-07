@@ -4,6 +4,7 @@ import { User } from '../typeorm/entities/User';
 export enum DISCORD_API_ROUTES {
   OAUTH2_TOKEN = 'https://discord.com/api/v8/oauth2/token',
   OAUTH2_USER = 'https://discord.com/api/v8/users/@me',
+  OAUTH2_TOKEN_REVOKE = 'https://discord.com/api/v8/oauth2/token/revoke',
 }
 
 export type OAuth2ExchangeRequestParams = {
@@ -46,4 +47,9 @@ export type CreateUserParams = {
   discriminator: string;
   tag: string;
   avatar: string;
+};
+
+export type EncryptedTokens = {
+  accessToken: string;
+  refreshToken: string;
 };

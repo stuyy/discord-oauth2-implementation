@@ -1,11 +1,19 @@
 import { Request, Response } from 'express';
 import {
   createUser,
+  encryptTokens,
   exchangeAccessCodeForCredentials,
   getDiscordUserDetails,
+  revokeToken,
 } from '../../services/auth';
-import { buildOAuth2CredentialsRequest, buildUser } from '../../utils/helpers';
+import {
+  buildOAuth2CredentialsRequest,
+  buildUser,
+  decryptToken,
+  encryptToken,
+} from '../../utils/helpers';
 import { serializeSession } from '../../utils/session';
+import CryptoJS from 'crypto-js';
 
 export async function authDiscordRedirectController(
   req: Request,
@@ -18,10 +26,10 @@ export async function authDiscordRedirectController(
       const { data: credentials } = await exchangeAccessCodeForCredentials(
         payload
       );
-      const { data: user } = await getDiscordUserDetails(
-        credentials.access_token
-      );
-      const newUser = await createUser(buildUser(user, credentials));
+      const { access_token, refresh_token } = credentials;
+      const { data: user } = await getDiscordUserDetails(access_token);
+      const tokens = encryptTokens(access_token, refresh_token);
+      const newUser = await createUser(buildUser(user, tokens));
       await serializeSession(req, newUser);
       res.send(newUser);
     } catch (err) {
@@ -39,5 +47,12 @@ export async function getAuthenticatedUserController(
 }
 
 export async function revokeAccessTokenController(req: Request, res: Response) {
-  return req.user ? res.send(req.user) : res.send(401);
+  if (!req.user) return res.sendStatus(401);
+  try {
+    await revokeToken(req.user.accessToken);
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
 }

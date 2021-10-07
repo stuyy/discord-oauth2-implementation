@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import { getDiscordUser } from '../../controllers/user';
 
 const router = Router();
 
-router.get('/profile', (req, res) => res.send('Hello'));
+router.get('/profile', getDiscordUser);
 
 export default router;
